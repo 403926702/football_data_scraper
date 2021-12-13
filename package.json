@@ -1,0 +1,22 @@
+{
+  "name": "football",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "async": "^3.2.0",
+    "cheerio": "^1.0.0-rc.10",
+    "exceljs": "^4.2.1",
+    "moment": "^2.29.1",
+    "nsqjs": "^0.13.0",
+    "puppeteer-core": "^10.1.0"
+  }
+}

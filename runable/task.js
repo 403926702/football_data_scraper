@@ -1,0 +1,106 @@
+const puppeteer = require('puppeteer-core')
+const cheerio = require('cheerio')
+const config = require('../lib/config')
+const utils = require('../lib/utils')
+
+
+let games = config.games
+
+
+;(async (games) => {
+    let uri = 'http://live.win007.com/'
+    let send = config.sever
+    const browser = await puppeteer.connect({
+        browserWSEndpoint: send,
+        defaultViewport: {width: 1024, height: 768}
+    })
+    const page = await browser.newPage();
+    await page.goto(uri, {timeout: config.gotoTimeOut}).then().catch(err => {
+        throw err
+    })
+    //展开赛事窗口
+    await page.click('#button3')
+
+    //全选
+    await page.click('#Layer2 > div.bts > input[type=button]:nth-child(3)')
+    // //反选
+    // await page.click('#Layer2 > div.bts > input[type=button]:nth-child(4)')
+    // //选择比赛
+    // await page.evaluate((countries) => {
+    //     document.querySelectorAll('#myleague > ul> li').forEach((d) => {
+    //         for (let i = 0; i < countries.length; i++) {
+    //             if (d.querySelector('label').innerText.split('[')[0] === countries[i]) {
+    //                 d.querySelector('label').click()
+    //             }
+    //         }
+    //     })
+    // }, countries)
+    // await page.waitForTimeout(config.timeout)
+    //确定
+    await page.click('#Layer2 > div.bts > input[type=button]:nth-child(5)')
+
+
+    await page.waitForSelector('#table_live > tbody tr')
+    const html = await page.$eval('html', node => node.innerHTML)
+    const $ = cheerio.load(html, {decodeEntities: false})
+    let game_arr = []
+    await page.close()
+
+    $('#table_live > tbody tr').map((i, d) => {
+        for (let j = 0; j < games.length; j++) {
+            if ($(d).text().match(games[j])) {
+                let info = {
+                    xurl: '',
+                    ourl: '',
+                    country: games[j]
+                }
+                $(d).find('td.icons2 a ').map((i, u) => {
+                    if ($(u).text().includes('析')) {
+
+                        info.xurl = `http://zq.win007.com/analysis/${$(u).attr('onclick').match(/(?<=\()(.*?)(?=\))/g)}sb.htm`
+                    }
+                    if ($(u).text().includes('欧')) {
+
+                        info.ourl = `http://op1.win007.com/oddslist/${$(u).attr('href').match(/(?<=\()(.*?)(?=\))/g)}.htm`
+                    }
+
+                })
+
+                game_arr.push(info)
+            }
+        }
+    })
+    console.log('game_arr=== ', game_arr)
+    await utils.connectNSQ({
+        writer: {
+            host: config.nsq.nsqd.host,
+            port: config.nsq.nsqd.port,
+            topic: config.nsq.topic,
+        },
+        body: game_arr
+    })
+})(games)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
