@@ -39,7 +39,6 @@ let games = config.games
     //确定
     await page.click('#Layer2 > div.bts > input[type=button]:nth-child(5)')
 
-
     await page.waitForSelector('#table_live > tbody tr')
     const html = await page.$eval('html', node => node.innerHTML)
     const $ = cheerio.load(html, {decodeEntities: false})
@@ -47,12 +46,17 @@ let games = config.games
     await page.close()
 
     $('#table_live > tbody tr').map((i, d) => {
-        for (let j = 0; j < games.length; j++) {
+        let j = 0
+        let len = games.length
+        // console.log('$(d).text()======> ',$(d).text())
+
+        for (j; j < len; j++) {
             if ($(d).text().match(games[j])) {
                 let info = {
                     xurl: '',
                     ourl: '',
-                    country: games[j]
+                    country: games[j],
+                    crown: ''
                 }
                 $(d).find('td.icons2 a ').map((i, u) => {
                     if ($(u).text().includes('析')) {
@@ -65,12 +69,12 @@ let games = config.games
                     }
 
                 })
-
+                info.crown = $(d).find('td:nth-child(11) > div:nth-child(1)').text().replace(/\//g,'|').replace(/\*/g,'') || '无'
                 game_arr.push(info)
             }
         }
     })
-    console.log('game_arr=== ', game_arr)
+    console.log('game_arr===> ', game_arr)
     await utils.connectNSQ({
         writer: {
             host: config.nsq.nsqd.host,

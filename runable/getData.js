@@ -15,10 +15,6 @@ let file = `/Users/hm/Desktop/football相关/球探数据${monent(new Date()).fo
 let catchURL = async (msg) => {
     try {
         let game = JSON.parse(msg.body)
-        // {
-        //     xurl: 'http://zq.win007.com/analysis/1969711sb.htm',
-        //     ourl: 'http://op1.win007.com/oddslist/1969711.htm'
-        // }
         console.log('game===> ', game)
         let xurl = game.xurl
         let send = config.sever
@@ -51,7 +47,6 @@ let catchURL = async (msg) => {
 
         let json_x = {}
         let arr_x = []
-        let team_name1, team_name2, score1, score2, field, field_info, team;
 
         $('#table_v > tbody tr').map((a, b) => {
             if ($(b).attr('id')) {
@@ -62,20 +57,14 @@ let catchURL = async (msg) => {
                 json_x[a] = arr_x
             }
         })
-
-        team_name1 = $('div.analyhead > div.home > a').text()
-        team_name2 = $('div.analyhead > div.guest > a').text()
-        score1 = $('#headVs > div > div:nth-child(1)').text()
-        score2 = $('#headVs > div > div:nth-child(3)').text()
-        field = $('#headVs > div > div:nth-child(2) > span:nth-child(2)').text()
-        field_info = $('#headVs > div > div:nth-child(2) > span.row.red.b').text()
-        team = `${game.country}-${team_name1} ${score1}-${score2}${field}${field_info} ${team_name2}-X`
-        // console.log(json_x)
-        team = team.trim().replace(/\s/g, '')
-        if (team.length > 30) {
-            team = team.substring(0, 29) + 'X'
+        // 西甲-巴列卡诺(主)-平/半
+        let team_name_x = $('div.analyhead > div.home > a').text()
+        let label_x = `${game.country}-${team_name_x}-${game.crown}-X`.trim().replace(/\s/g, '')
+        if (label_x.length > 30) {
+            label_x = label_x.substring(0, 29) + 'X'
         }
-        wap_xls_x(json_x, team)
+
+        wap_xls_x(json_x, label_x)
 
 
         //欧欧欧欧欧欧
@@ -101,56 +90,58 @@ let catchURL = async (msg) => {
         let $_ = cheerio.load(html_, {decodeEntities: false})
         let json_o = {}
         let arr_o = []
+        let json_o_avg = {}
         if ($_('#oddsList_tab > tbody tr').text() === '') {
             console.log('欧。。。。。。没有数据', JSON.parse(msg.body))
             // await page.close()
-            utils.requeue(msg)
-        }
-        $_('#oddsList_tab > tbody tr').map((a, b) => {
-            arr_o = []
-            if ($_(b).text().includes('威廉希尔')
-               || $_(b).text().includes('Sportsbet.com.au')
-               || $_(b).text().includes('Intertops')
-               || $_(b).text().includes('Interwetten')
-               || $_(b).text().includes('利记sbobet')
-               || $_(b).text().includes('立博')
-               || $_(b).text().includes('澳门')
-            ) {
-                $_(b).find('td').map((e, f) => {
-                    if ($_(f).text()) {
-                        arr_o.push($_(f).text())
-                    }
-                })
-                arr_o.push('111')
-                arr_o.push((Number(arr_o[1]) * Number(arr_o[8])).toFixed(2))
-                arr_o.push((Number(arr_o[2]) * Number(arr_o[9])).toFixed(2))
-                arr_o.push((Number(arr_o[3]) * Number(arr_o[10])).toFixed(2))
-                arr_o.push('222')
-                arr_o.push((Number(arr_o[8]) * Number(arr_o[14])).toFixed(2))
-                arr_o.push((Number(arr_o[9]) * Number(arr_o[15])).toFixed(2))
-                arr_o.push((Number(arr_o[10]) * Number(arr_o[16])).toFixed(2))
-                arr_o.push('333')
-                arr_o.push((Number(arr_o[8]) * Number(arr_o[18])).toFixed(2))
-                arr_o.push((Number(arr_o[9]) * Number(arr_o[19])).toFixed(2))
-                arr_o.push((Number(arr_o[10]) * Number(arr_o[20])).toFixed(2))
-                arr_o.push('444')
-                arr_o.push((Number(arr_o[8]) * Number(arr_o[22])).toFixed(2))
-                arr_o.push((Number(arr_o[9]) * Number(arr_o[23])).toFixed(2))
-                arr_o.push((Number(arr_o[10]) * Number(arr_o[24])).toFixed(2))
+            // utils.requeue(msg)
+        } else {
+            $_('#oddsList_tab > tbody tr').map((a, b) => {
+                arr_o = []
+                if ($_(b).text().includes('威廉希尔')
+                   || $_(b).text().includes('Sportsbet.com.au')
+                   || $_(b).text().includes('Intertops')
+                   || $_(b).text().includes('Interwetten')
+                   || $_(b).text().includes('利记sbobet')
+                   || $_(b).text().includes('立博')
+                   || $_(b).text().includes('澳门')
+                ) {
+                    $_(b).find('td').map((e, f) => {
+                        if ($_(f).text()) {
+                            arr_o.push($_(f).text())
+                        }
+                    })
+                    arr_o.push('111')
+                    arr_o.push((Number(arr_o[1]) * Number(arr_o[8])).toFixed(2))
+                    arr_o.push((Number(arr_o[2]) * Number(arr_o[9])).toFixed(2))
+                    arr_o.push((Number(arr_o[3]) * Number(arr_o[10])).toFixed(2))
+                    arr_o.push('222')
+                    arr_o.push((Number(arr_o[8]) * Number(arr_o[14])).toFixed(2))
+                    arr_o.push((Number(arr_o[9]) * Number(arr_o[15])).toFixed(2))
+                    arr_o.push((Number(arr_o[10]) * Number(arr_o[16])).toFixed(2))
+                    arr_o.push('333')
+                    arr_o.push((Number(arr_o[8]) * Number(arr_o[18])).toFixed(2))
+                    arr_o.push((Number(arr_o[9]) * Number(arr_o[19])).toFixed(2))
+                    arr_o.push((Number(arr_o[10]) * Number(arr_o[20])).toFixed(2))
+                    arr_o.push('444')
+                    arr_o.push((Number(arr_o[8]) * Number(arr_o[22])).toFixed(2))
+                    arr_o.push((Number(arr_o[9]) * Number(arr_o[23])).toFixed(2))
+                    arr_o.push((Number(arr_o[10]) * Number(arr_o[24])).toFixed(2))
 
-                json_o[a] = arr_o
-            }
-        })
+                    json_o[a] = arr_o
+                }
+            })
+            json_o_avg = cal_avg(json_o)
+        }
         // console.log(json_o)
-        let team1 = `${game.country}-${team_name1} ${score1}-${score2}${field}${field_info} ${team_name2}-O`
-        team1 = team1.trim().replace(/\s/g, '')
-        if (team1.length > 30) {
-            team1 = team1.substring(0, 29) + 'O'
+
+        let label_o = `${game.country}-${team_name_x}-${game.crown}-O`.trim().replace(/\s/g, '')
+        if (label_o.length > 30) {
+            label_o = label_o.substring(0, 29) + 'O'
         }
 
-        let json_o_avg = cal_avg(json_o)
 
-        wap_xls_o(json_o_avg, team1)
+        wap_xls_o(json_o_avg, label_o)
         await page.close()
         utils.finish(msg)
     } catch (e) {
