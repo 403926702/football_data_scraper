@@ -26,6 +26,8 @@ let catchURL = async (msg) => {
         await page.goto(xurl, {timeout: config.gotoTimeOut}).then().catch(err => {
             throw err
         })
+        await page.screenshot({path: '../data/net_xxx.png'})
+
         await page.waitForTimeout(config.timeout)
         await page.waitForSelector('#porlet_8 > table > tbody > tr.red_t1')
         //析析析析析析
@@ -72,6 +74,7 @@ let catchURL = async (msg) => {
         await page.goto(ourl, {timeout: config.gotoTimeOut}).then().catch(err => {
             throw err
         })
+        await page.screenshot({path: '../data/net_ooo.png'})
 
         await page.waitForTimeout(config.timeout)
         await page.waitForSelector('#team > table').then().catch(console.dir)
@@ -139,8 +142,7 @@ let catchURL = async (msg) => {
         if (label_o.length > 30) {
             label_o = label_o.substring(0, 29) + 'O'
         }
-
-
+        // json_o_avg['url'] = [game.ourl]
         wap_xls_o(json_o_avg, label_o)
         await page.close()
         utils.finish(msg)
@@ -218,7 +220,7 @@ function cal_avg(json_o) {
 }
 
 
-function wap_xls_o(json_x, team1) {
+function wap_xls_o(json_o, team1) {
     const worksheet = workbook.addWorksheet(team1, {properties: {tabColor: {argb: 'c30101'}}});
     let cols = [
         {header: '所有公司', key: 'company', width: 30},
@@ -251,9 +253,8 @@ function wap_xls_o(json_x, team1) {
         {header: '和-4', key: '和-4', width: 12},
         {header: '客胜-4', key: '客胜-4', width: 12} //29
     ];
-
     worksheet.columns = cols
-    Object.values(json_x).map((data) => {
+    Object.values(json_o).map((data) => {
         worksheet.addRow(wrap_ifo_x(cols, data))
     })
     workbook.xlsx.writeFile(file).then(() => {
@@ -298,10 +299,10 @@ function wap_xls_x(json_x, team) {
 function wrap_ifo_x(cols, data) {
     let res = {}
     cols.map((col, j) => {
-        if (col.header === '主' || col.header === '客' || col.header === '和'
-           || col.header === '主胜' || col.header === '客胜' || col.header === '主胜率'
-           || col.header === '和率' || col.header === '客胜率' || col.header === '返还率'
-           || col.header === '凯利指数'
+        if (col.header == '主' || col.header == '客' || col.header == '和'
+           || col.header == '主胜' || col.header == '客胜' || col.header == '主胜率'
+           || col.header == '和率' || col.header === '客胜率' || col.header == '返还率'
+           || col.header == '凯利指数'
         ) {
             res[col.key] = Number(data[j])
         } else {
