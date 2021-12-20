@@ -56,20 +56,19 @@ let games = config.games
                     xurl: '',
                     ourl: '',
                     country: games[j],
+                    team: '',
                     crown: ''
                 }
                 $(d).find('td.icons2 a ').map((i, u) => {
                     if ($(u).text().includes('析')) {
-
                         info.xurl = `http://zq.win007.com/analysis/${$(u).attr('onclick').match(/(?<=\()(.*?)(?=\))/g)}sb.htm`
                     }
                     if ($(u).text().includes('欧')) {
-
                         info.ourl = `http://op1.win007.com/oddslist/${$(u).attr('href').match(/(?<=\()(.*?)(?=\))/g)}.htm`
                     }
-
                 })
-                info.crown = $(d).find('td:nth-child(11) > div:nth-child(1)').text().replace(/\//g,'|').replace(/\*/g,'') || '无'
+                info.team = $(d).find('td:nth-child(5)').text().trim()
+                info.crown = $(d).find('td:nth-child(11) > div:nth-child(1)').text().replace(/\//g, '|').replace(/\*/g, '') || '无'
                 game_arr.push(info)
             }
         }

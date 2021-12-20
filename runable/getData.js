@@ -60,8 +60,8 @@ let catchURL = async (msg) => {
             }
         })
         // 西甲-巴列卡诺(主)-平/半
-        let team_name_x = $('div.analyhead > div.home > a').text()
-        let label_x = `${game.country}-${team_name_x}-${game.crown}-X`.trim().replace(/\s/g, '')
+        // let team_name_x = $('div.analyhead > div.home > a').text()
+        let label_x = `${game.country}-${game.team}-${game.crown}-X`.trim().replace(/\s/g, '')
         if (label_x.length > 30) {
             label_x = label_x.substring(0, 29) + 'X'
         }
@@ -138,7 +138,7 @@ let catchURL = async (msg) => {
         }
         // console.log(json_o)
 
-        let label_o = `${game.country}-${team_name_x}-${game.crown}-O`.trim().replace(/\s/g, '')
+        let label_o = `${game.country}-${game.team}-${game.crown}-O`.trim().replace(/\s/g, '')
         if (label_o.length > 30) {
             label_o = label_o.substring(0, 29) + 'O'
         }
