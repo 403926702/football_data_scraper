@@ -59,13 +59,15 @@ let catchURL = async (msg) => {
                 json_x[a] = arr_x
             }
         })
+        json_x['note'] = [$('#table_v > tbody > tr:last-child').text().replace(/\t*/g, '').trim()]
+        json_x['url'] = [game.xurl]
+
         // 西甲-巴列卡诺(主)-平/半
         // let team_name_x = $('div.analyhead > div.home > a').text()
         let label_x = `${game.country}-${game.team}-${game.crown}-X`.trim().replace(/\s/g, '')
         if (label_x.length > 30) {
             label_x = label_x.substring(0, 29) + 'X'
         }
-
         wap_xls_x(json_x, label_x)
 
 
@@ -95,6 +97,7 @@ let catchURL = async (msg) => {
         let arr_o = []
         let json_o_avg = {}
         if ($_('#oddsList_tab > tbody tr').text() === '') {
+            json_o_avg['url'] = [game.ourl]
             console.log('欧。。。。。。没有数据', JSON.parse(msg.body))
             // await page.close()
             // utils.requeue(msg)
@@ -134,7 +137,9 @@ let catchURL = async (msg) => {
                     json_o[a] = arr_o
                 }
             })
-            json_o_avg = cal_avg(json_o)
+            if(Object.keys(json_o).length){
+                json_o_avg = cal_avg(json_o)
+            }
         }
         // console.log(json_o)
 
@@ -142,7 +147,7 @@ let catchURL = async (msg) => {
         if (label_o.length > 30) {
             label_o = label_o.substring(0, 29) + 'O'
         }
-        // json_o_avg['url'] = [game.ourl]
+        json_o_avg['url'] = [game.ourl]
         wap_xls_o(json_o_avg, label_o)
         await page.close()
         utils.finish(msg)
@@ -255,7 +260,7 @@ function wap_xls_o(json_o, team1) {
     ];
     worksheet.columns = cols
     Object.values(json_o).map((data) => {
-        worksheet.addRow(wrap_ifo_x(cols, data))
+        worksheet.addRow(wrap_ifo(cols, data))
     })
     workbook.xlsx.writeFile(file).then(() => {
         console.log('欧写入成功...')
@@ -287,7 +292,7 @@ function wap_xls_x(json_x, team) {
 
     worksheet.columns = cols
     Object.values(json_x).map((data) => {
-        worksheet.addRow(wrap_ifo_x(cols, data))
+        worksheet.addRow(wrap_ifo(cols, data))
     })
     workbook.xlsx.writeFile(file).then(() => {
         console.log('析写入成功...')
@@ -296,18 +301,18 @@ function wap_xls_x(json_x, team) {
     })
 }
 
-function wrap_ifo_x(cols, data) {
+function wrap_ifo(cols, data) {
     let res = {}
     cols.map((col, j) => {
-        if (col.header == '主' || col.header == '客' || col.header == '和'
-           || col.header == '主胜' || col.header == '客胜' || col.header == '主胜率'
-           || col.header == '和率' || col.header === '客胜率' || col.header == '返还率'
-           || col.header == '凯利指数'
-        ) {
-            res[col.key] = Number(data[j])
-        } else {
-            res[col.key] = data[j]
-        }
+        // if (col.header == '主' || col.header == '客' || col.header == '和'
+        //    || col.header == '主胜' || col.header == '客胜' || col.header == '主胜率'
+        //    || col.header == '和率' || col.header === '客胜率' || col.header == '返还率'
+        //    || col.header == '凯利指数'
+        // ) {
+        //     res[col.key] = Number(data[j])
+        // } else {
+        res[col.key] = data[j]
+        // }
     })
     return res
 }
