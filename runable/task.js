@@ -2,6 +2,7 @@ const puppeteer = require('puppeteer-core')
 const cheerio = require('cheerio')
 const config = require('../lib/config')
 const utils = require('../lib/utils')
+const proxies = require("../lib/proxies")
 
 
 let games = config.games
@@ -9,15 +10,20 @@ let games = config.games
 
 ;(async (games) => {
     let uri = 'http://live.win007.com/'
-    let send = config.sever
+    const proxy_types = ['http', 'socks']
+    const proxyType = proxy_types[Math.floor(Math.random() * proxy_types.length)]
+    let proxy = await proxies.random_proxy({type: proxyType});
+    console.log("uri====>  ", uri)
+    console.log("proxy====> ", proxy)
+    const proxyMap = {'http': 'http'}
+    const proxyScheme = proxyMap[proxyType]
+    let send = `${config.sever}?timeout=70000--proxy-server=${proxyScheme}://${proxy.host}:${proxy.port}`
     const browser = await puppeteer.connect({
         browserWSEndpoint: send,
         defaultViewport: {width: 1024, height: 768}
     })
     const page = await browser.newPage();
-    await page.goto(uri, {timeout: config.gotoTimeOut}).then().catch(err => {
-        throw err
-    })
+    await page.goto(uri, {timeout: config.gotoTimeOut, waitUntil: 'networkidle2'}).then().catch(console.dir)
     //展开赛事窗口
     await page.click('#button3')
 

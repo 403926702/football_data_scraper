@@ -17,6 +17,8 @@
     "exceljs": "^4.2.1",
     "moment": "^2.29.1",
     "nsqjs": "^0.13.0",
-    "puppeteer-core": "^10.1.0"
+    "ping": "^0.4.1",
+    "puppeteer-core": "^10.1.0",
+    "ssdb": "^0.3.8"
   }
 }

@@ -5,6 +5,7 @@ const puppeteer = require('puppeteer-core')
 const cheerio = require('cheerio')
 const ExcelJS = require('exceljs');
 let monent = require('moment')
+const proxies = require("../lib/proxies")
 const workbook = new ExcelJS.Workbook();
 workbook.creator = 'One of the best';
 workbook.lastModifiedBy = 'One of the best';
@@ -17,13 +18,21 @@ let catchURL = async (msg) => {
         let game = JSON.parse(msg.body)
         console.log('game===> ', game)
         let xurl = game.xurl
-        let send = config.sever
+        const proxy_types = ['http']
+        const proxyType = proxy_types[Math.floor(Math.random() * proxy_types.length)]
+        let proxy = await proxies.random_proxy({type: proxyType});
+        // console.log("xurl====>  ", xurl)
+        // console.log("proxy====> ", proxy)
+        const proxyMap = {'http': 'http', 'socks': 'socks5'}
+        const proxyScheme = proxyMap[proxyType]
+        let send = `${config.sever}?timeout=70000--proxy-server=${proxyScheme}://${proxy.host}:${proxy.port}`
+
         const browser = await puppeteer.connect({
             browserWSEndpoint: send,
             defaultViewport: {width: 1024, height: 768}
         })
         const page = await browser.newPage();
-        await page.goto(xurl, {timeout: config.gotoTimeOut}).then().catch(err => {
+        await page.goto(xurl, {timeout: config.gotoTimeOut, waitUntil: 'networkidle2'}).then().catch(err => {
             throw err
         })
         await page.screenshot({path: '../data/net_xxx.png'})
@@ -44,12 +53,12 @@ let catchURL = async (msg) => {
         let init = await page.$x('//*[@id="table_v"]/tbody/tr[1]')
         await init[0].hover()
         await page.waitForTimeout(config.timeout)
-
         await page.screenshot({path: '../data/xxx.png'})
 
-        let json_x = {}
-        let arr_x = []
+        let note = $('#table_v > tbody > tr:last-child').text().replace(/\t*/g, '').trim()
 
+        /*let json_x = {}
+        let arr_x = []
         $('#table_v > tbody tr').map((a, b) => {
             if ($(b).attr('id')) {
                 arr_x = []
@@ -59,21 +68,19 @@ let catchURL = async (msg) => {
                 json_x[a] = arr_x
             }
         })
-        json_x['note'] = [$('#table_v > tbody > tr:last-child').text().replace(/\t*/g, '').trim()]
         json_x['url'] = [game.xurl]
-
         // 西甲-巴列卡诺(主)-平/半
         // let team_name_x = $('div.analyhead > div.home > a').text()
         let label_x = `${game.country}-${game.team}-${game.crown}析`.trim().replace(/\s/g, '')
         // if (label_x.length > 30) {
         //     label_x = label_x.substring(0, 29) + 'X'
         // }
-        await wap_xls_x(json_x, label_x)
-
+        await wap_xls_x(json_x, label_x).then().catch(console.dir)
+        console.log('析====>写入成功')*/
 
         //欧欧欧欧欧欧
         let ourl = game.ourl
-        await page.goto(ourl, {timeout: config.gotoTimeOut}).then().catch(err => {
+        await page.goto(ourl, {timeout: config.gotoTimeOut, waitUntil: 'networkidle2'}).then().catch(err => {
             throw err
         })
         await page.screenshot({path: '../data/net_ooo.png'})
@@ -107,7 +114,8 @@ let catchURL = async (msg) => {
                 if ($_(b).text().includes('威廉希尔')
                    || $_(b).text().includes('Sportsbet.com.au')
                    || $_(b).text().includes('Intertops')
-                   || $_(b).text().includes('Interwetten')
+                   || $_(b).text().includes('Interwetten(塞浦路斯)')
+                   || $_(b).text().includes('12B(菲律宾)')
                    || $_(b).text().includes('利记sbobet')
                    || $_(b).text().includes('立博')
                    || $_(b).text().includes('澳门')
@@ -137,18 +145,22 @@ let catchURL = async (msg) => {
                     json_o[a] = arr_o
                 }
             })
+
             if (Object.keys(json_o).length) {
-                json_o_avg = cal_avg(json_o)
+                json_o_avg = cal_avg(game.crown, json_o)
             }
         }
-        // console.log(json_o)
-
-        let label_o = `${game.country}-${game.team}-${game.crown}欧`.trim().replace(/\s/g, '')
+        let label_o = `${game.country}-${game.team}-欧`.trim().replace(/\s/g, '')
         // if (label_o.length > 30) {
         //     label_o = label_o.substring(0, 29) + 'O'
         // }
+        // json_o_avg['crown'] = [game.crown]
+        json_o_avg['note'] = [note]
         json_o_avg['url'] = [game.ourl]
-        await wap_xls_o(json_o_avg, label_o)
+
+        await wap_xls_o(json_o_avg, label_o).then().catch(console.dir)
+        console.log('欧====>写入成功')
+
         await page.close()
         utils.finish(msg)
     } catch (e) {
@@ -158,7 +170,7 @@ let catchURL = async (msg) => {
 }
 
 
-function cal_avg(json_o) {
+function cal_avg(crown, json_o) {
     let company_num = Object.values(json_o).length
     let avg_arr = []
     let temp1 = [], temp2 = [], temp3 = [], temp4 = [], temp5 = [], temp6 = [], temp7 = [], temp8 = [], temp9 = [],
@@ -190,7 +202,7 @@ function cal_avg(json_o) {
             if (j === 28) temp28.push(data[j])
         }
     })
-    avg_arr.push('')
+    avg_arr.push(crown)  //crown数据
     avg_arr.push(avg(temp1, company_num))
     avg_arr.push(avg(temp2, company_num))
     avg_arr.push(avg(temp3, company_num))
@@ -262,11 +274,7 @@ async function wap_xls_o(json_o, team1) {
     Object.values(json_o).map(async (data) => {
         await worksheet.addRow(wrap_ifo(cols, data))
     })
-    await workbook.xlsx.writeFile(file).then(() => {
-        console.log('欧写入成功...')
-    }).catch((err) => {
-        console.log(err)
-    })
+    await workbook.xlsx.writeFile(file)
 }
 
 
@@ -294,11 +302,7 @@ async function wap_xls_x(json_x, team) {
     Object.values(json_x).map(async (data) => {
         await worksheet.addRow(wrap_ifo(cols, data))
     })
-    await workbook.xlsx.writeFile(file).then(() => {
-        console.log('析写入成功...')
-    }).catch((err) => {
-        console.log(err)
-    })
+    await workbook.xlsx.writeFile(file)
 }
 
 function wrap_ifo(cols, data) {
