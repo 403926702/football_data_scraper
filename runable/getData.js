@@ -64,11 +64,11 @@ let catchURL = async (msg) => {
 
         // 西甲-巴列卡诺(主)-平/半
         // let team_name_x = $('div.analyhead > div.home > a').text()
-        let label_x = `${game.country}-${game.team}-${game.crown}-X`.trim().replace(/\s/g, '')
-        if (label_x.length > 30) {
-            label_x = label_x.substring(0, 29) + 'X'
-        }
-        wap_xls_x(json_x, label_x)
+        let label_x = `${game.country}-${game.team}-${game.crown}析`.trim().replace(/\s/g, '')
+        // if (label_x.length > 30) {
+        //     label_x = label_x.substring(0, 29) + 'X'
+        // }
+        await wap_xls_x(json_x, label_x)
 
 
         //欧欧欧欧欧欧
@@ -137,18 +137,18 @@ let catchURL = async (msg) => {
                     json_o[a] = arr_o
                 }
             })
-            if(Object.keys(json_o).length){
+            if (Object.keys(json_o).length) {
                 json_o_avg = cal_avg(json_o)
             }
         }
         // console.log(json_o)
 
-        let label_o = `${game.country}-${game.team}-${game.crown}-O`.trim().replace(/\s/g, '')
-        if (label_o.length > 30) {
-            label_o = label_o.substring(0, 29) + 'O'
-        }
+        let label_o = `${game.country}-${game.team}-${game.crown}欧`.trim().replace(/\s/g, '')
+        // if (label_o.length > 30) {
+        //     label_o = label_o.substring(0, 29) + 'O'
+        // }
         json_o_avg['url'] = [game.ourl]
-        wap_xls_o(json_o_avg, label_o)
+        await wap_xls_o(json_o_avg, label_o)
         await page.close()
         utils.finish(msg)
     } catch (e) {
@@ -225,8 +225,8 @@ function cal_avg(json_o) {
 }
 
 
-function wap_xls_o(json_o, team1) {
-    const worksheet = workbook.addWorksheet(team1, {properties: {tabColor: {argb: 'c30101'}}});
+async function wap_xls_o(json_o, team1) {
+    const worksheet = await workbook.addWorksheet(team1, {properties: {tabColor: {argb: 'c30101'}}});
     let cols = [
         {header: '所有公司', key: 'company', width: 30},
         {header: '主胜', key: 'home_win', width: 10},
@@ -259,10 +259,10 @@ function wap_xls_o(json_o, team1) {
         {header: '客胜-4', key: '客胜-4', width: 12} //29
     ];
     worksheet.columns = cols
-    Object.values(json_o).map((data) => {
-        worksheet.addRow(wrap_ifo(cols, data))
+    Object.values(json_o).map(async (data) => {
+        await worksheet.addRow(wrap_ifo(cols, data))
     })
-    workbook.xlsx.writeFile(file).then(() => {
+    await workbook.xlsx.writeFile(file).then(() => {
         console.log('欧写入成功...')
     }).catch((err) => {
         console.log(err)
@@ -270,8 +270,8 @@ function wap_xls_o(json_o, team1) {
 }
 
 
-function wap_xls_x(json_x, team) {
-    const worksheet = workbook.addWorksheet(team, {properties: {tabColor: {argb: 'c30101'}}});
+async function wap_xls_x(json_x, team) {
+    const worksheet = await workbook.addWorksheet(team, {properties: {tabColor: {argb: 'c30101'}}});
     let cols = [
         {header: '类型', key: 'gameType', width: 10},
         {header: '日期', key: 'date', width: 10},
@@ -291,10 +291,10 @@ function wap_xls_x(json_x, team) {
     ];
 
     worksheet.columns = cols
-    Object.values(json_x).map((data) => {
-        worksheet.addRow(wrap_ifo(cols, data))
+    Object.values(json_x).map(async (data) => {
+        await worksheet.addRow(wrap_ifo(cols, data))
     })
-    workbook.xlsx.writeFile(file).then(() => {
+    await workbook.xlsx.writeFile(file).then(() => {
         console.log('析写入成功...')
     }).catch((err) => {
         console.log(err)

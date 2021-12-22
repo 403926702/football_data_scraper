@@ -68,7 +68,10 @@ let games = config.games
                     }
                 })
                 info.team = $(d).find('td:nth-child(5)').text().trim()
-                info.crown = $(d).find('td:nth-child(11) > div:nth-child(1)').text().replace(/\//g, '|').replace(/\*/g, '') || '无'
+                let score1 = $(d).find('td:nth-child(10) > div:nth-child(1)').text()
+                let score2 = $(d).find('td:nth-child(12) > div:nth-child(1)').text()
+                let crown = $(d).find('td:nth-child(11) > div:nth-child(1)').text().replace(/\//g, '|').replace(/\*/g, '') || '无'
+                info.crown = `${score1} ${crown} ${score2}`
                 game_arr.push(info)
             }
         }
