@@ -1,4 +1,10 @@
-const puppeteer = require('puppeteer-core')
+"use strict"
+
+const puppeteer = require('puppeteer-extra');
+const StealthPlugin = require('puppeteer-extra-plugin-stealth')
+puppeteer.use(StealthPlugin())
+const userAgent = require('user-agents')
+// const puppeteer = require('puppeteer-core')
 const cheerio = require('cheerio')
 const config = require('../lib/config')
 const utils = require('../lib/utils')
@@ -9,7 +15,7 @@ let games = config.games
 
 
 ;(async (games) => {
-    let uri = 'http://live.win007.com/index2in1.aspx?id=1'
+    let uri = 'http://live.win007.com/'
     const proxy_types = ['http', 'socks']
     const proxyType = proxy_types[Math.floor(Math.random() * proxy_types.length)]
     let proxy = await proxies.random_proxy({type: proxyType});
@@ -23,6 +29,7 @@ let games = config.games
         defaultViewport: {width: 1024, height: 768}
     })
     const page = await browser.newPage();
+    await page.setUserAgent(new userAgent().toString())
     await page.goto(uri, {timeout: config.gotoTimeOut, waitUntil: 'networkidle2'}).then().catch(console.dir)
     //展开赛事窗口
     await page.click('#button3')
@@ -63,7 +70,9 @@ let games = config.games
                     ourl: '',
                     country: games[j],
                     team: '',
-                    crown: ''
+                    crown: '',
+                    score1: '',
+                    score2: ''
                 }
                 $(d).find('td.icons2 a ').map((i, u) => {
                     if ($(u).text().includes('析')) {
@@ -74,10 +83,9 @@ let games = config.games
                     }
                 })
                 info.team = $(d).find('td:nth-child(5)').text().trim()
-                let score1 = $(d).find('td:nth-child(9) > div:nth-child(1)').text()
-                let crown = $(d).find('td:nth-child(10) > div:nth-child(1)').text().replace(/\//g, '|').replace(/\*/g, '') || '无'
-                let score2 = $(d).find('td:nth-child(11) > div:nth-child(1)').text()
-                info.crown = `${score1} ${crown} ${score2}`
+                info.score1 = $(d).find('td:nth-child(10) > div:nth-child(1)').text()
+                info.crown = $(d).find('td:nth-child(11) > div:nth-child(1)').text().replace(/\//g, '|').replace(/\*/g, '') || '无'
+                info.score2 = $(d).find('td:nth-child(12) > div:nth-child(1)').text()
                 game_arr.push(info)
             }
         }

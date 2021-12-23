@@ -19,6 +19,9 @@
     "nsqjs": "^0.13.0",
     "ping": "^0.4.1",
     "puppeteer-core": "^10.1.0",
-    "ssdb": "^0.3.8"
+    "puppeteer-extra": "^3.2.3",
+    "puppeteer-extra-plugin-stealth": "^2.9.0",
+    "ssdb": "^0.3.8",
+    "user-agents": "^1.0.874"
   }
 }

@@ -1,7 +1,11 @@
 "use strict"
 const utils = require('../lib/utils')
 const config = require('../lib/config')
-const puppeteer = require('puppeteer-core')
+// const puppeteer = require('puppeteer-core')
+const puppeteer = require('puppeteer-extra');
+const StealthPlugin = require('puppeteer-extra-plugin-stealth')
+puppeteer.use(StealthPlugin())
+const userAgent = require('user-agents')
 const cheerio = require('cheerio')
 const ExcelJS = require('exceljs');
 let monent = require('moment')
@@ -32,10 +36,11 @@ let catchURL = async (msg) => {
             defaultViewport: {width: 1024, height: 768}
         })
         const page = await browser.newPage();
+        await page.setUserAgent(new userAgent().toString())
+
         await page.goto(xurl, {timeout: config.gotoTimeOut, waitUntil: 'networkidle2'}).then().catch(err => {
             throw err
         })
-        await page.screenshot({path: '../data/net_xxx.png'})
 
         await page.waitForTimeout(config.timeout)
         await page.waitForSelector('#porlet_8 > table > tbody > tr.red_t1')
@@ -53,9 +58,9 @@ let catchURL = async (msg) => {
         let init = await page.$x('//*[@id="table_v"]/tbody/tr[1]')
         await init[0].hover()
         await page.waitForTimeout(config.timeout)
-        await page.screenshot({path: '../data/xxx.png'})
+        await page.screenshot({path: '../data/daily_xxx.png'})
 
-        let note = $('#table_v > tbody > tr:last-child').text().replace(/\t*/g, '').trim()
+        let note = $('#table_v > tbody > tr:last-child').text().replace(/\t*/g, '').trim() //拿到析页面战绩数据
 
         /*let json_x = {}
         let arr_x = []
@@ -83,7 +88,6 @@ let catchURL = async (msg) => {
         await page.goto(ourl, {timeout: config.gotoTimeOut, waitUntil: 'networkidle2'}).then().catch(err => {
             throw err
         })
-        await page.screenshot({path: '../data/net_ooo.png'})
 
         await page.waitForTimeout(config.timeout)
         await page.waitForSelector('#team > table').then().catch(console.dir)
@@ -94,7 +98,7 @@ let catchURL = async (msg) => {
             changeShowType(2);
         }).then().catch(console.dir)
 
-        await page.screenshot({path: '../data/ooo.png'})
+        await page.screenshot({path: '../data/daily_ooo.png'})
 
         await page.waitForSelector('#dataList').then().catch(console.dir)
 
@@ -147,10 +151,10 @@ let catchURL = async (msg) => {
             })
 
             if (Object.keys(json_o).length) {
-                json_o_avg = cal_avg(game.crown, json_o)
+                json_o_avg = cal_avg(game, json_o)
             }
         }
-        let label_o = `${game.country}-${game.team}-欧`.trim().replace(/\s/g, '')
+        let label_o = `${game.country}-${game.team}-${game.crown}-欧`.trim().replace(/\s/g, '')
         // if (label_o.length > 30) {
         //     label_o = label_o.substring(0, 29) + 'O'
         // }
@@ -170,7 +174,7 @@ let catchURL = async (msg) => {
 }
 
 
-function cal_avg(crown, json_o) {
+function cal_avg(game, json_o) {
     let company_num = Object.values(json_o).length
     let avg_arr = []
     let temp1 = [], temp2 = [], temp3 = [], temp4 = [], temp5 = [], temp6 = [], temp7 = [], temp8 = [], temp9 = [],
@@ -202,7 +206,7 @@ function cal_avg(crown, json_o) {
             if (j === 28) temp28.push(data[j])
         }
     })
-    avg_arr.push(crown)  //crown数据
+    avg_arr.push(`${game.score1} ${game.crown} ${game.score2}`)  //crown数据
     avg_arr.push(avg(temp1, company_num))
     avg_arr.push(avg(temp2, company_num))
     avg_arr.push(avg(temp3, company_num))
