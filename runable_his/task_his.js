@@ -12,17 +12,18 @@ const proxies = require("../lib/proxies")
 
 let value = 1  //初盘选择澳门
 
-let url = ''  //德甲
-let country = ''
+let url = 'http://zq.win007.com/cn/SubLeague/2021/13_1570.html'  //芬兰超
+
+let country = '芬兰超'
 
 
-let rounds = 1  //轮数
-let row = 1    //行数
+let rounds = 9  //轮数
+let row = 2    //行数
 
 
 
 let catch_task = async (url) => {
-    const proxy_types = ['http', 'socks']
+    const proxy_types = ['http']
     const proxyType = proxy_types[Math.floor(Math.random() * proxy_types.length)]
     let proxy = await proxies.random_proxy({type: proxyType});
     // console.log("url====>  ", url)
@@ -40,7 +41,6 @@ let catch_task = async (url) => {
     await page.goto(url, {timeout: config.gotoTimeOut, waitUntil: 'networkidle2'}).then().catch(console.dir)
 
     await page.waitForSelector('#Table2')
-
     //选择轮数
     await page.click(`#Table2 > tbody > tr:nth-child(${row}) > td:nth-child(${rounds + 1})`)
 

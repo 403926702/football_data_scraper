@@ -16,7 +16,7 @@ let games = config.games
 
 ;(async (games) => {
     let uri = 'http://live.win007.com/'
-    const proxy_types = ['http', 'socks']
+    const proxy_types = ['http']
     const proxyType = proxy_types[Math.floor(Math.random() * proxy_types.length)]
     let proxy = await proxies.random_proxy({type: proxyType});
     console.log("uri====>  ", uri)

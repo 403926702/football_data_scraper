@@ -20,12 +20,12 @@ let catchURL = async (msg) => {
     try {
         let game = JSON.parse(msg.body)
         console.log('game===> ', game)
-        let file = `/Users/hm/Desktop/football相关/${game.country}历史数据2021-2022第${game.rounds}轮.xls`
+        let file = `/Users/hm/Desktop/football相关/${game.country}历史数据2021第${game.rounds}轮.xls`
         let xurl = game.xurl
         const proxy_types = ['http']
         const proxyType = proxy_types[Math.floor(Math.random() * proxy_types.length)]
         let proxy = await proxies.random_proxy({type: proxyType});
-        const proxyMap = {'http': 'http', 'socks': 'socks5'}
+        const proxyMap = {'http': 'http'}
         const proxyScheme = proxyMap[proxyType]
         let send = `${config.sever}?timeout=70000--proxy-server=${proxyScheme}://${proxy.host}:${proxy.port}`
         console.log('send===> ', send)
@@ -219,7 +219,6 @@ function cal_avg(game, json_o) {
 
 
 async function wap_xls_o(file, game, json_o, team1) {
-
     const worksheet = await workbook.addWorksheet(team1, {properties: {tabColor: {argb: 'c30101'}}});
     let cols = [
         {header: '所有公司', key: 'company', width: 30},
