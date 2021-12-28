@@ -204,7 +204,7 @@ function cal_avg(game, json_o) {
             if (j === 29) temp29.push(data[j])
         }
     })
-    avg_arr.push('')
+    avg_arr.push(`${game.score1} ${game.crown} ${game.score2}`)
     avg_arr.push('')
     avg_arr.push(avg(temp2, company_num))
     avg_arr.push(avg(temp3, company_num))
