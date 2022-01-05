@@ -10,15 +10,15 @@ const utils = require('../lib/utils')
 const proxies = require("../lib/proxies")
 
 
-let value = 1  //初盘选择澳门
+let value = 3  //初盘选择 crown
 
-let url = 'http://zq.win007.com/cn/SubLeague/2021/13_1570.html'  //芬兰超
+let url = 'http://zq.win007.com/cn/SubLeague/2021-2022/2.html'  //阿甲
 
-let country = '芬兰超'
+let country = '阿甲'
 
 
-let rounds = 9  //轮数
-let row = 2    //行数
+let rounds_ = 2   //轮数
+let row = 1    //行数
 
 
 
@@ -42,7 +42,8 @@ let catch_task = async (url) => {
 
     await page.waitForSelector('#Table2')
     //选择轮数
-    await page.click(`#Table2 > tbody > tr:nth-child(${row}) > td:nth-child(${rounds + 1})`)
+    await page.click(`#Table2 > tbody > tr:nth-child(${row}) > td:nth-child(${rounds_ + 1})`)
+    let rounds = await page.$eval(`#Table2 > tbody > tr:nth-child(${row}) > td:nth-child(${rounds_ + 1})`,node=>node.innerText)
 
     //修改初盘
     await page.evaluate((value) => {
