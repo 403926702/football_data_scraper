@@ -103,39 +103,42 @@ let catchURL = async (msg) => {
                    || $_(b).text().includes('澳门')
                 ) {
                     arr_o.push(`${game.score1} ${game.crown} ${game.score2}`)
+                    arr_o.push(note)
                     $_(b).find('td').map((e, f) => {
                         if ($_(f).text()) {
                             arr_o.push($_(f).text())
                         }
                     })
                     arr_o.push('***')
-                    arr_o.push((Number(arr_o[2]) * Number(arr_o[9])).toFixed(2))
                     arr_o.push((Number(arr_o[3]) * Number(arr_o[10])).toFixed(2))
                     arr_o.push((Number(arr_o[4]) * Number(arr_o[11])).toFixed(2))
+                    arr_o.push((Number(arr_o[5]) * Number(arr_o[12])).toFixed(2))
                     arr_o.push('***')
-                    arr_o.push((Number(arr_o[9]) * Number(arr_o[15])).toFixed(2))
                     arr_o.push((Number(arr_o[10]) * Number(arr_o[16])).toFixed(2))
                     arr_o.push((Number(arr_o[11]) * Number(arr_o[17])).toFixed(2))
+                    arr_o.push((Number(arr_o[12]) * Number(arr_o[18])).toFixed(2))
                     arr_o.push('***')
-                    arr_o.push((Number(arr_o[9]) * Number(arr_o[19])).toFixed(2))
                     arr_o.push((Number(arr_o[10]) * Number(arr_o[20])).toFixed(2))
                     arr_o.push((Number(arr_o[11]) * Number(arr_o[21])).toFixed(2))
+                    arr_o.push((Number(arr_o[12]) * Number(arr_o[22])).toFixed(2))
                     arr_o.push('***')
-                    arr_o.push((Number(arr_o[9]) * Number(arr_o[23])).toFixed(2))
                     arr_o.push((Number(arr_o[10]) * Number(arr_o[24])).toFixed(2))
                     arr_o.push((Number(arr_o[11]) * Number(arr_o[25])).toFixed(2))
+                    arr_o.push((Number(arr_o[12]) * Number(arr_o[26])).toFixed(2))
                     json_o[a] = arr_o
+
                 }
             })
+            // console.log('json_o=====> ',json_o)
             if (Object.keys(json_o).length) {
-                json_o_avg = cal_avg(game, json_o)
+                json_o_avg = cal_avg(game, json_o, note)
             }
         }
         let label_o = `${game.country}-${game.team}-${game.crown}`.trim().replace(/\s/g, '')
         // if (label_o.length > 30) {
         //     label_o = label_o.substring(0, 29) + 'O'
         // }
-        json_o_avg['note'] = [`${game.score1} ${game.crown} ${game.score2}`, note]
+        // json_o_avg['note'] = [`${game.score1} ${game.crown} ${game.score2}`, note]
         json_o_avg['url'] = [`${game.score1} ${game.crown} ${game.score2}`, game.ourl]
         await wap_xls_o(file, json_o_avg, label_o).then().catch(console.dir)
         console.log('欧====>写入成功')
@@ -149,16 +152,16 @@ let catchURL = async (msg) => {
 }
 
 
-function cal_avg(game,json_o) {
+function cal_avg(game, json_o, note) {
+
     let company_num = Object.values(json_o).length
     let avg_arr = []
-    let temp2 = [], temp3 = [], temp4 = [], temp5 = [], temp6 = [], temp7 = [], temp8 = [],
-       temp9 = [], temp10 = [], temp11 = [], temp15 = [], temp16 = [], temp17 = [], temp19 = [],
-       temp20 = [], temp21 = [], temp23 = [], temp24 = [], temp25 = [], temp27 = [], temp28 = [],
-       temp29 = []
+    let temp3 = [], temp4 = [], temp5 = [], temp6 = [], temp7 = [], temp8 = [], temp9 = [],
+       temp10 = [], temp11 = [], temp12 = [], temp16 = [], temp17 = [], temp18 = [], temp20 = [],
+       temp21 = [], temp22 = [], temp24 = [], temp25 = [], temp26 = [], temp28 = [], temp29 = [],
+       temp30 = []
     Object.values(json_o).map((data, i) => {
         for (let j = 0; j < data.length; j++) {
-            if (j === 2) temp2.push(data[j])
             if (j === 3) temp3.push(data[j])
             if (j === 4) temp4.push(data[j])
             if (j === 5) temp5.push(data[j])
@@ -168,23 +171,23 @@ function cal_avg(game,json_o) {
             if (j === 9) temp9.push(data[j])
             if (j === 10) temp10.push(data[j])
             if (j === 11) temp11.push(data[j])
-            if (j === 15) temp15.push(data[j])
+            if (j === 12) temp12.push(data[j])
             if (j === 16) temp16.push(data[j])
             if (j === 17) temp17.push(data[j])
-            if (j === 19) temp19.push(data[j])
+            if (j === 18) temp18.push(data[j])
             if (j === 20) temp20.push(data[j])
             if (j === 21) temp21.push(data[j])
-            if (j === 23) temp23.push(data[j])
+            if (j === 22) temp22.push(data[j])
             if (j === 24) temp24.push(data[j])
             if (j === 25) temp25.push(data[j])
-            if (j === 27) temp27.push(data[j])
+            if (j === 26) temp26.push(data[j])
             if (j === 28) temp28.push(data[j])
             if (j === 29) temp29.push(data[j])
+            if (j === 30) temp30.push(data[j])
         }
     })
     avg_arr.push(`${game.score1} ${game.crown} ${game.score2}`)
-    avg_arr.push('')
-    avg_arr.push(avg(temp2, company_num))
+    avg_arr.push(note)
     avg_arr.push(avg(temp3, company_num))
     avg_arr.push(avg(temp4, company_num))
     avg_arr.push(avg(temp5, company_num))
@@ -194,32 +197,34 @@ function cal_avg(game,json_o) {
     avg_arr.push(avg(temp9, company_num))
     avg_arr.push(avg(temp10, company_num))
     avg_arr.push(avg(temp11, company_num))
+    avg_arr.push(avg(temp12, company_num))
     avg_arr.push('')
     avg_arr.push('')
     avg_arr.push('')
-    avg_arr.push(avg(temp15, company_num))
     avg_arr.push(avg(temp16, company_num))
     avg_arr.push(avg(temp17, company_num))
+    avg_arr.push(avg(temp18, company_num))
     avg_arr.push('')
-    avg_arr.push(avg(temp19, company_num))
     avg_arr.push(avg(temp20, company_num))
     avg_arr.push(avg(temp21, company_num))
+    avg_arr.push(avg(temp22, company_num))
     avg_arr.push('')
-    avg_arr.push(avg(temp23, company_num))
     avg_arr.push(avg(temp24, company_num))
     avg_arr.push(avg(temp25, company_num))
+    avg_arr.push(avg(temp26, company_num))
     avg_arr.push('')
-    avg_arr.push(avg(temp27, company_num))
     avg_arr.push(avg(temp28, company_num))
     avg_arr.push(avg(temp29, company_num))
+    avg_arr.push(avg(temp30, company_num))
     json_o['avg'] = avg_arr
     return json_o
 }
 
-async function wap_xls_o(file, json_o, label_o) {
+async function wap_xls_o(json_o, label_o) {
     const worksheet = await workbook.addWorksheet(label_o, {properties: {tabColor: {argb: 'c30101'}}});
     let cols = [
         {header: '指数', key: 'index', width: 20},
+        {header: '胜率', key: 'odds', width: 50},
         {header: '所有公司', key: 'company', width: 30},
         {header: '主胜', key: 'home_win', width: 10},
         {header: '和', key: 'draw', width: 10},
