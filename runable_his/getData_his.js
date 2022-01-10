@@ -139,7 +139,7 @@ let catchURL = async (msg) => {
         //     label_o = label_o.substring(0, 29) + 'O'
         // }
         // json_o_avg['note'] = [`${game.score1} ${game.crown} ${game.score2}`, note]
-        json_o_avg['url'] = [`${game.score1} ${game.crown} ${game.score2}`, game.ourl]
+        // json_o_avg['url'] = [`${game.score1} ${game.crown} ${game.score2}`, game.ourl]
         await wap_xls_o(file, json_o_avg, label_o).then().catch(console.dir)
         console.log('欧====>写入成功')
 
@@ -153,13 +153,12 @@ let catchURL = async (msg) => {
 
 
 function cal_avg(game, json_o, note) {
-
     let company_num = Object.values(json_o).length
     let avg_arr = []
     let temp3 = [], temp4 = [], temp5 = [], temp6 = [], temp7 = [], temp8 = [], temp9 = [],
        temp10 = [], temp11 = [], temp12 = [], temp16 = [], temp17 = [], temp18 = [], temp20 = [],
        temp21 = [], temp22 = [], temp24 = [], temp25 = [], temp26 = [], temp28 = [], temp29 = [],
-       temp30 = []
+       temp30 = [], temp31 = []
     Object.values(json_o).map((data, i) => {
         for (let j = 0; j < data.length; j++) {
             if (j === 3) temp3.push(data[j])
@@ -184,10 +183,12 @@ function cal_avg(game, json_o, note) {
             if (j === 28) temp28.push(data[j])
             if (j === 29) temp29.push(data[j])
             if (j === 30) temp30.push(data[j])
+            if (j === 31) temp31.push(data[j])
         }
     })
     avg_arr.push(`${game.score1} ${game.crown} ${game.score2}`)
     avg_arr.push(note)
+    avg_arr.push(`${game.ourl}`)
     avg_arr.push(avg(temp3, company_num))
     avg_arr.push(avg(temp4, company_num))
     avg_arr.push(avg(temp5, company_num))
@@ -224,8 +225,8 @@ async function wap_xls_o(json_o, label_o) {
     const worksheet = await workbook.addWorksheet(label_o, {properties: {tabColor: {argb: 'c30101'}}});
     let cols = [
         {header: '指数', key: 'index', width: 20},
-        {header: '胜率', key: 'odds', width: 50},
-        {header: '所有公司', key: 'company', width: 30},
+        {header: '胜率', key: 'odds', width: 75},
+        {header: '所有公司', key: 'company', width: 32},
         {header: '主胜', key: 'home_win', width: 10},
         {header: '和', key: 'draw', width: 10},
         {header: '客胜', key: 'guest_win', width: 10},
