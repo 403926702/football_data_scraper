@@ -128,7 +128,6 @@ let catchURL = async (msg) => {
                     arr_o.push((Number(arr_o[11]) * Number(arr_o[25])).toFixed(2))
                     arr_o.push((Number(arr_o[12]) * Number(arr_o[26])).toFixed(2))
                     json_o[a] = arr_o
-
                 }
             })
             // console.log('json_o=====> ',json_o)
@@ -137,7 +136,7 @@ let catchURL = async (msg) => {
             }
         }
         let label_o = `${game.country}-${game.team}-${game.crown}`.trim().replace(/\s/g, '')
-        await utils.wap_xls_o(workbook, file, json_o_avg, label_o).then().catch(console.dir)
+        await wap_xls_o(file, json_o_avg, label_o).then().catch(console.dir)
         console.log('欧====>写入成功')
 
         await page.close()
@@ -148,6 +147,57 @@ let catchURL = async (msg) => {
     }
 }
 
+
+async function wap_xls_o(file, json_o, label_o) {
+    const worksheet = await workbook.addWorksheet(label_o, {properties: {tabColor: {argb: 'c30101'}}});
+    let cols = [
+        {header: '指数', key: 'index', width: 20},
+        {header: '胜率', key: 'odds', width: 75},
+        {header: '所有公司', key: 'company', width: 32},
+        {header: '主胜', key: 'home_win', width: 10},
+        {header: '和', key: 'draw', width: 10},
+        {header: '客胜', key: 'guest_win', width: 10},
+        {header: '主胜率', key: 'home_win_rate', width: 10},
+        {header: '和率', key: 'draw_rate', width: 10},
+        {header: '客胜率', key: 'guest_win_rate', width: 10},
+        {header: '返还率', key: 'return_rate', width: 10},
+        {header: '凯利指数', key: 'kelly_index1', width: 10},
+        {header: '凯利指数', key: 'kelly_index2', width: 10},
+        {header: '凯利指数', key: 'kelly_index3', width: 10},
+        {header: '变化时间', key: 'change_time', width: 12},
+        {header: '历史指数', key: 'history_index', width: 12},
+        {header: '', key: '', width: 12},  //间隔
+        {header: '主胜-1', key: '主胜-1', width: 12},
+        {header: '和-1', key: '和-1', width: 12},
+        {header: '客胜-1', key: '客胜-1', width: 12},
+        {header: '', key: '', width: 12},  //间隔
+        {header: '主胜-2', key: '主胜-2', width: 12},
+        {header: '和-2', key: '和-2', width: 12},
+        {header: '客胜-2', key: '客胜-2', width: 12},
+        {header: '', key: '', width: 12},  //间隔
+        {header: '主胜-3', key: '主胜-3', width: 12},
+        {header: '和-3', key: '和-3', width: 12},
+        {header: '客胜-3', key: '客胜-3', width: 12},
+        {header: '', key: '', width: 12},  //间隔
+        {header: '主胜-4', key: '主胜-4', width: 12},
+        {header: '和-4', key: '和-4', width: 12},
+        {header: '客胜-4', key: '客胜-4', width: 12} //29
+    ];
+    worksheet.columns = cols
+    Object.values(json_o).map(async (data) => {
+        await worksheet.addRow(wrap_ifo(cols, data))
+    })
+    await workbook.xlsx.writeFile(file)
+}
+
+
+function wrap_ifo(cols, data) {
+    let res = {}
+    cols.map((col, j) => {
+        res[col.key] = data[j]
+    })
+    return res
+}
 
 utils.connectNSQ({
     reader: {
