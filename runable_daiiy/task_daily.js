@@ -23,9 +23,12 @@ let games = config.games
     console.log("proxy====> ", proxy)
     const proxyMap = {'http': 'http'}
     const proxyScheme = proxyMap[proxyType]
-    let send = `${config.sever}?timeout=70000--proxy-server=${proxyScheme}://${proxy.host}:${proxy.port}`
+    let endpoint = `${config.sever}?timeout=70000`
+    if (!!proxy) {
+        endpoint = `${config.sever}?timeout=70000--proxy-server=${proxyScheme}://${proxy.host}:${proxy.port}`
+    }
     const browser = await puppeteer.connect({
-        browserWSEndpoint: send,
+        browserWSEndpoint: endpoint,
         defaultViewport: {width: 1024, height: 768}
     })
     const page = await browser.newPage();
