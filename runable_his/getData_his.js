@@ -126,9 +126,11 @@ let catchURL = async (msg) => {
                     arr_o.push((Number(arr_o[11]) * Number(arr_o[25])).toFixed(2))
                     arr_o.push((Number(arr_o[12]) * Number(arr_o[26])).toFixed(2))
                     json_o[a] = arr_o
-
                 }
             })
+            if (!arr_o.length) {
+                json_o_avg['url'] = [game.ourl]
+            }
             // console.log('json_o=====> ',json_o)
             if (Object.keys(json_o).length) {
                 json_o_avg = await utils.cal_avg(game, json_o, note)
