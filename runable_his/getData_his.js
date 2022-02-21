@@ -20,7 +20,7 @@ let catchURL = async (msg) => {
     try {
         let game = JSON.parse(msg.body)
         console.log('game===> ', game)
-        let file = `/Users/hm/Desktop/football相关/${game.country}历史数据2020-2021第${game.rounds}轮.xls`
+        let file = `/Users/hm/Desktop/football相关/${game.country}历史数据${game.time}第${game.rounds}轮.xls`
         let xurl = game.xurl
         const proxy_types = ['http']
         const proxyType = proxy_types[Math.floor(Math.random() * proxy_types.length)]

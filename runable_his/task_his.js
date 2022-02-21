@@ -11,13 +11,12 @@ const proxies = require("../lib/proxies")
 
 
 let value = 3  //初盘选择 crown
+let url = 'http://zq.win007.com/cn/SubLeague/2020-2021/5_114.html'  //比利时
+let country = '比利时'
+let time = '2020-2021'
 
-let url = 'http://zq.win007.com/cn/SubLeague/2021-2022/2.html'  //阿甲
 
-let country = '阿甲'
-
-
-let rounds_ = 2   //轮数
+let rounds_ = 10   //轮数
 let row = 1    //行数
 
 
@@ -67,7 +66,8 @@ let catch_task = async (url) => {
             crown: '',
             score1: '',
             score2: '',
-            rounds: rounds
+            rounds: rounds,
+            time:time
         }
         if ($(tr).find('td:nth-child(9) > a:nth-child(2)').text().includes('欧')) {
             info.xurl = `http://zq.win007.com` + $(tr).find('td:nth-child(9) > a:nth-child(1)').attr('href')
