@@ -11,13 +11,13 @@ const proxies = require("../lib/proxies")
 
 
 let value = 3  //初盘选择 crown
-let url = 'http://zq.win007.com/cn/SubLeague/2020-2021/5_114.html'  //比利时
-let country = '比利时'
-let time = '2020-2021'
+let url = 'http://zq.win007.com/cn/SubLeague/2021/1.html'   //爱尔兰超
+let country = '爱尔兰超'
+let time = '2021'
 
 
-let rounds_ = 10   //轮数
-let row = 1    //行数
+let rounds_ = 17  //轮数
+let row = 2    //行数
 
 
 

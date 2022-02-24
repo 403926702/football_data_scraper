@@ -20,7 +20,7 @@ let catchURL = async (msg) => {
     try {
         let game = JSON.parse(msg.body)
         console.log('game===> ', game)
-        let file = `/Users/hm/Desktop/football相关/${game.country}历史数据${game.time}第${game.rounds}轮.xls`
+        let file = `/Users/hm/Desktop/football相关/${game.country}历史数据${game.time}.xls`/*第${game.rounds}轮.xls*/
         let xurl = game.xurl
         const proxy_types = ['http']
         const proxyType = proxy_types[Math.floor(Math.random() * proxy_types.length)]
@@ -136,7 +136,7 @@ let catchURL = async (msg) => {
                 json_o_avg = await utils.cal_avg(game, json_o, note)
             }
         }
-        let label_o = `${game.country}-${game.team}-${game.crown}`.trim().replace(/\s/g, '')
+        let label_o = `${game.country}-${game.team}-${game.crown}-${game.rounds}`.trim().replace(/\s/g, '')
         await wap_xls_o(file, json_o_avg, label_o).then().catch(console.dir)
         console.log('欧====>写入成功')
 
