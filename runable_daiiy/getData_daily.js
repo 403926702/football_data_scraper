@@ -22,7 +22,7 @@ let catchURL = async (msg) => {
         console.log('game===> ', game)
         let file = `/Users/hm/Desktop/football相关/球探数据${monent(new Date()).format('YYYY-MM-DD')}.xls`
         let xurl = game.xurl
-        const proxy_types = ['http']
+        const proxy_types = ['http','socks']
         const proxyType = proxy_types[Math.floor(Math.random() * proxy_types.length)]
         let proxy = await proxies.random_proxy({type: proxyType});
         // console.log("xurl====>  ", xurl)
