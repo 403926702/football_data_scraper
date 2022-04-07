@@ -99,7 +99,7 @@ let catchURL = async (msg) => {
                    || $_(b).text().includes('Interwetten(塞浦路斯)')
                    || $_(b).text().includes('12B(菲律宾)')
                    || $_(b).text().includes('利记sbobet')
-                   || $_(b).text().includes('立博')
+                   || $_(b).text().includes('立B(英国)')
                    || $_(b).text().includes('澳门')
                 ) {
                     arr_o.push(`${game.score1} ${game.crown} ${game.score2}`)
