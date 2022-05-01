@@ -64,10 +64,8 @@ let games = config.games
     $('#table_live > tbody tr').map((i, d) => {
         let j = 0
         let len = games.length
-        // console.log('$(d).text()======> ',$(d).text())
-
         for (j; j < len; j++) {
-            if ($(d).text().match(games[j])) {
+            if ($(d).text().match(games[j]) && $(d).text().includes('析') && $(d).text().includes('欧')) {
                 let info = {
                     xurl: '',
                     ourl: '',
@@ -77,7 +75,7 @@ let games = config.games
                     score1: '',
                     score2: ''
                 }
-                $(d).find('td.icons2 a ').map((i, u) => {
+                $(d).find('td.icons2 a').map((i, u) => {
                     if ($(u).text().includes('析')) {
                         info.xurl = `http://zq.win007.com/analysis/${$(u).attr('onclick').match(/(?<=\()(.*?)(?=\))/g)}sb.htm`
                     }
