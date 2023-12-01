@@ -12,22 +12,20 @@ let monent = require('moment')
 
 
 let str =
-`英超[1]
-阿甲[1]
-欧罗巴杯[8]
-自由杯[3]
-美冠杯[4]
-南美超杯[1]
-阿美超[2]
-里约锦TG[1]
-巴西杯[8]
-阿根廷杯[2]
-欧会杯[8]`
+`挪超[6]
+日职联[9]
+自由杯[10]
+南球杯[10]
+日职乙[11]
+巴西乙[2]
+韩足总[8]
+澳足总[6]
+阿根廷杯[2]`
 
 let arr = str.split('\n')
 let res_arr = []
 arr.map((d,i)=>{
-    res_arr.push(d.replace(/\[\d*\]/g, ''))
+    res_arr.push(d.replace(/\[\d*\]/g, '').replace(/\[\d*/g, ''))
 })
 console.log(res_arr)
 

@@ -9,16 +9,18 @@ const cheerio = require('cheerio')
 const config = require('../lib/config')
 const utils = require('../lib/utils')
 const proxies = require("../lib/proxies")
+const _ = require("lodash")
 
 
 let games = config.games
 
 
 ;(async (games) => {
-    let uri = 'http://live.win007.com/'
-    const proxy_types = ['http']
+    let uri = 'http://live.titan007.com/index2in1.aspx?id=3'
+    const proxy_types = ['socks']
     const proxyType = proxy_types[Math.floor(Math.random() * proxy_types.length)]
     let proxy = await proxies.random_proxy({type: proxyType});
+    // let proxy =null
     console.log("uri====>  ", uri)
     console.log("proxy====> ", proxy)
     const proxyMap = {'http': 'http'}
@@ -33,64 +35,46 @@ let games = config.games
     })
     const page = await browser.newPage();
     await page.setUserAgent(new userAgent().toString())
-    await page.goto(uri, {timeout: config.gotoTimeOut, waitUntil: 'networkidle2'}).then().catch(console.dir)
-    //展开赛事窗口
-    await page.click('#button3')
-
-    //全选
-    await page.click('#Layer2 > div.bts > input[type=button]:nth-child(3)')
-    // //反选
-    // await page.click('#Layer2 > div.bts > input[type=button]:nth-child(4)')
-    // //选择比赛
-    // await page.evaluate((countries) => {
-    //     document.querySelectorAll('#myleague > ul> li').forEach((d) => {
-    //         for (let i = 0; i < countries.length; i++) {
-    //             if (d.querySelector('label').innerText.split('[')[0] === countries[i]) {
-    //                 d.querySelector('label').click()
-    //             }
-    //         }
-    //     })
-    // }, countries)
-    // await page.waitForTimeout(config.timeout)
-    //确定
-    await page.click('#Layer2 > div.bts > input[type=button]:nth-child(5)')
-
-    await page.waitForSelector('#table_live > tbody tr')
+    await page.goto(uri, {timeout: config.gotoTimeOut/*, waitUntil: 'networkidle2'*/}).then().catch(console.dir)
+    //完整
+    await page.click('#button6')
+    await page.waitForSelector('#table_live > tbody')
     const html = await page.$eval('html', node => node.innerHTML)
     const $ = cheerio.load(html, {decodeEntities: false})
+    setTimeout(async function () {
+        await page.close()
+    }, 1000)
     let game_arr = []
-    await page.close()
-
-    $('#table_live > tbody tr').map((i, d) => {
+    $('#table_live > tbody tr').map(async (i, d) => {
         let j = 0
         let len = games.length
         for (j; j < len; j++) {
-            if ($(d).text().match(games[j]) && $(d).text().includes('析') && $(d).text().includes('欧')) {
-                let info = {
-                    xurl: '',
-                    ourl: '',
-                    country: games[j],
-                    team: '',
-                    crown: '',
-                    score1: '',
-                    score2: ''
-                }
-                $(d).find('td.icons2 a').map((i, u) => {
-                    if ($(u).text().includes('析')) {
-                        info.xurl = `http://zq.win007.com/analysis/${$(u).attr('onclick').match(/(?<=\()(.*?)(?=\))/g)}sb.htm`
+            if ($(d).text().includes(games[j]) && $(d).text().includes('析') && $(d).text().includes('欧')) {
+                let info = {}
+                let id = _.get($(d).attr('id').split('_'), '[1]', '')
+                info['country'] = games[j]
+                $(d).find('td a').map((idx, r) => {
+                    if ($(r).text() === '析' && $(r).attr('title') === '数据分析') {
+                        info['xurl'] = `http://zq.titan007.com/analysis/${id ? id : '无id'}sb.htm`
                     }
-                    if ($(u).text().includes('欧')) {
-                        info.ourl = `http://op1.win007.com/oddslist/${$(u).attr('href').match(/(?<=\()(.*?)(?=\))/g)}.htm`
+                    if ($(r).text() === '欧' && $(r).attr('title') === '胜平负') {
+                        info['ourl'] = `http://op1.titan007.com/oddslist/${id ? id : ''}.htm`
                     }
                 })
-                info.team = $(d).find('td:nth-child(5)').text().trim()
-                info.score1 = $(d).find('td:nth-child(10) > div:nth-child(1)').text()
-                info.crown = $(d).find('td:nth-child(11) > div:nth-child(1)').text().replace(/\//g, '|').replace(/\*/g, '') || '无'
-                info.score2 = $(d).find('td:nth-child(12) > div:nth-child(1)').text()
+                info['team'] = $(d).find(`td > #${`team1_${id}`}`).text()
+                info['score1'] = $(d).find('td.oddss > .odds3').text()
+                // info['crown'] = $(d).find('td:nth-child(11) > div:nth-child(1)').text().replace(/\//g, '|').replace(/\*/g, '') || '无'
+                // info['score2'] = $(d).find('td:nth-child(12) > div:nth-child(1)').text()
+
+
+
                 game_arr.push(info)
+
+
             }
         }
     })
+
     console.log('game_arr===> ', game_arr)
     await utils.connectNSQ({
         writer: {

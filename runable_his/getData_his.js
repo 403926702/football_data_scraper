@@ -24,19 +24,19 @@ let catchURL = async (msg) => {
         let xurl = game.xurl
         const proxy_types = ['http']
         const proxyType = proxy_types[Math.floor(Math.random() * proxy_types.length)]
-        let proxy = await proxies.random_proxy({type: proxyType});
-        const proxyMap = {'http': 'http'}
+        let proxy = await proxies.random_proxy({ type: proxyType });
+        const proxyMap = { 'http': 'http' }
         const proxyScheme = proxyMap[proxyType]
         let send = `${config.sever}?timeout=70000--proxy-server=${proxyScheme}://${proxy.host}:${proxy.port}`
         console.log('send===> ', send)
         const browser = await puppeteer.connect({
             browserWSEndpoint: send,
-            defaultViewport: {width: 1024, height: 768}
+            defaultViewport: { width: 1024, height: 768 }
         })
         const page = await browser.newPage();
         await page.setUserAgent(new userAgent().toString())
 
-        await page.goto(xurl, {timeout: config.gotoTimeOut, waitUntil: 'networkidle2'}).then().catch(err => {
+        await page.goto(xurl, { timeout: config.gotoTimeOut, waitUntil: 'networkidle2' }).then().catch(err => {
             throw err
         })
 
@@ -53,17 +53,17 @@ let catchURL = async (msg) => {
         })
         await page.waitForSelector('body')
         const html = await page.$eval('body', node => node.innerHTML)
-        let $ = cheerio.load(html, {decodeEntities: false})
+        let $ = cheerio.load(html, { decodeEntities: false })
         let init = await page.$x('//*[@id="table_v"]/tbody/tr[1]')
         await init[0].hover()
         await page.waitForTimeout(config.timeout)
-        await page.screenshot({path: '../data/his_xxx.png'})
+        await page.screenshot({ path: '../data/his_xxx.png' })
 
         let note = $('#table_v > tbody > tr:last-child').text().replace(/\t*/g, '').trim()  //拿到析页面战绩数据
 
         //欧欧欧欧欧欧
         let ourl = game.ourl
-        await page.goto(ourl, {timeout: config.gotoTimeOut, waitUntil: 'networkidle2'}).then().catch(err => {
+        await page.goto(ourl, { timeout: config.gotoTimeOut, waitUntil: 'networkidle2' }).then().catch(err => {
             throw err
         })
 
@@ -76,12 +76,12 @@ let catchURL = async (msg) => {
             changeShowType(2);
         }).then().catch(console.dir)
 
-        await page.screenshot({path: '../data/his_ooo.png'})
+        await page.screenshot({ path: '../data/his_ooo.png' })
 
         await page.waitForSelector('#dataList').then().catch(console.dir)
 
         let html_ = await page.$eval('#dataList', node => node.innerHTML)
-        let $_ = cheerio.load(html_, {decodeEntities: false})
+        let $_ = cheerio.load(html_, { decodeEntities: false })
         let json_o = {}
         let arr_o = []
         let json_o_avg = {}
@@ -94,14 +94,14 @@ let catchURL = async (msg) => {
             $_('#oddsList_tab > tbody tr').map((a, b) => {
                 arr_o = []
                 if ($_(b).text().includes('威廉希尔')
-                   || $_(b).text().includes('Sportsbet.com.au')
-                   || $_(b).text().includes('Intertops')
-                   || $_(b).text().includes('Interwetten(塞浦路斯)')
-                   || $_(b).text().includes('12B(菲律宾)')
-                   || $_(b).text().includes('利J')
-                   || $_(b).text().includes('立B')
-                   || $_(b).text().includes('澳门')
-                   || $_(b).text().includes('金宝B')
+                    || $_(b).text().includes('Sportsbet.com.au')
+                    || $_(b).text().includes('Intertops')
+                    || $_(b).text().includes('Interwetten(塞浦路斯)')
+                    || $_(b).text().includes('12B(菲律宾)')
+                    || $_(b).text().includes('利J')
+                    || $_(b).text().includes('立B')
+                    || $_(b).text().includes('澳门')
+                    || $_(b).text().includes('金宝B')
                 ) {
                     arr_o.push(`${game.score1} ${game.crown} ${game.score2}`)
                     arr_o.push(note)
@@ -150,39 +150,39 @@ let catchURL = async (msg) => {
 }
 
 async function wap_xls_o(file, json_o, label_o) {
-    const worksheet = await workbook.addWorksheet(label_o, {properties: {tabColor: {argb: 'c30101'}}});
+    const worksheet = await workbook.addWorksheet(label_o, { properties: { tabColor: { argb: 'c30101' } } });
     let cols = [
-        {header: '指数', key: 'index', width: 20},
-        {header: '胜率', key: 'odds', width: 75},
-        {header: '所有公司', key: 'company', width: 32},
-        {header: '主胜', key: 'home_win', width: 10},
-        {header: '和', key: 'draw', width: 10},
-        {header: '客胜', key: 'guest_win', width: 10},
-        {header: '主胜率', key: 'home_win_rate', width: 10},
-        {header: '和率', key: 'draw_rate', width: 10},
-        {header: '客胜率', key: 'guest_win_rate', width: 10},
-        {header: '返还率', key: 'return_rate', width: 10},
-        {header: '凯利指数', key: 'kelly_index1', width: 10},
-        {header: '凯利指数', key: 'kelly_index2', width: 10},
-        {header: '凯利指数', key: 'kelly_index3', width: 10},
-        {header: '变化时间', key: 'change_time', width: 12},
-        {header: '历史指数', key: 'history_index', width: 12},
-        {header: '', key: '', width: 12},  //间隔
-        {header: '主胜-1', key: '主胜-1', width: 12},
-        {header: '和-1', key: '和-1', width: 12},
-        {header: '客胜-1', key: '客胜-1', width: 12},
-        {header: '', key: '', width: 12},  //间隔
-        {header: '主胜-2', key: '主胜-2', width: 12},
-        {header: '和-2', key: '和-2', width: 12},
-        {header: '客胜-2', key: '客胜-2', width: 12},
-        {header: '', key: '', width: 12},  //间隔
-        {header: '主胜-3', key: '主胜-3', width: 12},
-        {header: '和-3', key: '和-3', width: 12},
-        {header: '客胜-3', key: '客胜-3', width: 12},
-        {header: '', key: '', width: 12},  //间隔
-        {header: '主胜-4', key: '主胜-4', width: 12},
-        {header: '和-4', key: '和-4', width: 12},
-        {header: '客胜-4', key: '客胜-4', width: 12} //29
+        { header: '指数', key: 'index', width: 20 },
+        { header: '胜率', key: 'odds', width: 75 },
+        { header: '所有公司', key: 'company', width: 32 },
+        { header: '主胜', key: 'home_win', width: 10 },
+        { header: '和', key: 'draw', width: 10 },
+        { header: '客胜', key: 'guest_win', width: 10 },
+        { header: '主胜率', key: 'home_win_rate', width: 10 },
+        { header: '和率', key: 'draw_rate', width: 10 },
+        { header: '客胜率', key: 'guest_win_rate', width: 10 },
+        { header: '返还率', key: 'return_rate', width: 10 },
+        { header: '凯利指数', key: 'kelly_index1', width: 10 },
+        { header: '凯利指数', key: 'kelly_index2', width: 10 },
+        { header: '凯利指数', key: 'kelly_index3', width: 10 },
+        { header: '变化时间', key: 'change_time', width: 12 },
+        { header: '历史指数', key: 'history_index', width: 12 },
+        { header: '', key: '', width: 12 },  //间隔
+        { header: '主胜-1', key: '主胜-1', width: 12 },
+        { header: '和-1', key: '和-1', width: 12 },
+        { header: '客胜-1', key: '客胜-1', width: 12 },
+        { header: '', key: '', width: 12 },  //间隔
+        { header: '主胜-2', key: '主胜-2', width: 12 },
+        { header: '和-2', key: '和-2', width: 12 },
+        { header: '客胜-2', key: '客胜-2', width: 12 },
+        { header: '', key: '', width: 12 },  //间隔
+        { header: '主胜-3', key: '主胜-3', width: 12 },
+        { header: '和-3', key: '和-3', width: 12 },
+        { header: '客胜-3', key: '客胜-3', width: 12 },
+        { header: '', key: '', width: 12 },  //间隔
+        { header: '主胜-4', key: '主胜-4', width: 12 },
+        { header: '和-4', key: '和-4', width: 12 },
+        { header: '客胜-4', key: '客胜-4', width: 12 }
     ];
     worksheet.columns = cols
     Object.values(json_o).map(async (data) => {
